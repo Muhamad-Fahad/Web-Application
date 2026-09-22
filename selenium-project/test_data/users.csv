@@ -1,0 +1,10 @@
+scenario,fullName,email,empId,empPassword,empPhone,empSalary,dept,clearance,workMode,compliance,expectedResult
+valid_operative_1,Kaelen Vex,kaelen.vex@cybertech.net,49201,CyberPass#2026,5550192834,145000,Cybersecurity Operations,Tier 5 - Root Admin,Hybrid,true,pass
+valid_operative_2,Dr. Samantha Wu,samantha.wu@cybertech.net,51082,QuantumKey$99,4155550182,172000,AI & Neural Systems,Tier 4 - High Clearance,Remote,true,pass
+empty_fields_fail,,,,,,,,,,,fail_empty
+invalid_email_fail,Tariq Mansoor,invalid-email-format,60129,AlphaKey#88,2065550199,135000,Quantum Infrastructure,Tier 3 - Standard Field,On-Site,true,fail_email
+short_password_fail,Nyx Sterling,nyx.sterling@cybertech.net,71294,pass,3125550811,125000,Data Defense & Cryptography,Tier 2 - Secret,Hybrid,true,fail_password
+invalid_numeric_phone_fail,Jaxon Cole,jaxon.cole@cybertech.net,80421,MasterCode#1,abc123phone,130000,Cybersecurity Operations,Tier 3 - Standard Field,Hybrid,true,fail_phone
+invalid_numeric_salary_fail,Seraphina Blake,seraphina.b@cybertech.net,91022,VaultSecure#4,5550187654,-5000,Autonomous Robotics,Tier 4 - High Clearance,Remote,true,fail_salary
+missing_dept_fail,Devon Vance,devon.vance@cybertech.net,39102,CyberAccess#1,5550123987,140000,,Tier 3 - Standard Field,Hybrid,true,fail_dept
+unacknowledged_compliance_fail,Lyra Mercer,lyra.mercer@cybertech.net,42190,ProtocolKey#7,5550182345,155000,Cybersecurity Operations,Tier 4 - High Clearance,Hybrid,false,fail_compliance

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CyberTech Systems Terminal - Secure Access Portal with dark theme and neon green aesthetics.">
+  <title>CyberTech // Terminal Access Login</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <main class="auth-wrapper">
+    <div class="cyber-card auth-card">
+      <div class="auth-header">
+        <div class="brand-icon">⚡</div>
+        <div class="cyber-badge" style="margin-bottom: 12px;">
+          <span class="status-dot"></span> SECURE GATEWAY v4.0.9
+        </div>
+        <h1 class="auth-title">TERMINAL ACCESS</h1>
+        <p class="auth-subtitle">ENTER CREDENTIALS TO INITIALIZE SESSION</p>
+      </div>
+
+      <!-- Alert Box for Failures -->
+      <div id="loginAlert" class="alert-banner alert-danger" style="display: none;" role="alert">
+        <span>⚠️</span>
+        <span id="loginAlertText">Authentication rejected: Invalid input parameters.</span>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" novalidate>
+        <!-- Email Field -->
+        <div class="form-group" id="group-loginEmail" style="margin-bottom: 18px;">
+          <label for="loginEmail" class="form-label">
+            <span>OPERATOR EMAIL</span>
+            <span class="req">*REQUIRED</span>
+          </label>
+          <div class="input-wrapper">
+            <span class="input-icon">✉</span>
+            <input 
+              type="email" 
+              id="loginEmail" 
+              name="loginEmail" 
+              class="form-input" 
+              placeholder="operator@cybertech.net"
+              autocomplete="email"
+              required
+            >
+          </div>
+          <span class="error-message" id="error-loginEmail">Please enter a valid operator email address.</span>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group" id="group-loginPassword" style="margin-bottom: 24px;">
+          <label for="loginPassword" class="form-label">
+            <span>ACCESS KEYCODE</span>
+            <span class="req">*MIN 8 CHARS</span>
+          </label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input 
+              type="password" 
+              id="loginPassword" 
+              name="loginPassword" 
+              class="form-input" 
+              placeholder="••••••••••••"
+              autocomplete="current-password"
+              required
+            >
+          </div>
+          <span class="error-message" id="error-loginPassword">Passcode must contain at least 8 characters.</span>
+        </div>
+
+        <!-- Buttons (At least 2 buttons) -->
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <button type="submit" id="btnLoginSubmit" class="btn btn-primary btn-full">
+            <span>AUTHENTICATE & ENTER</span>
+            <span>➔</span>
+          </button>
+          
+          <button type="button" id="btnDemoLogin" class="btn btn-secondary btn-full">
+            <span>FILL DEMO CREDENTIALS</span>
+            <span>⚡</span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Security Meta Footer -->
+      <div style="margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(0, 255, 102, 0.12); text-align: center; font-size: 0.76rem; color: var(--text-muted); font-family: var(--font-mono);">
+        ENCRYPTED SHA-256 SESSION // PROTOCOL 9
+      </div>
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script>
+    // Route guard: Redirect to dashboard if session already active
+    Auth.protectPage('public');
+
+    // UI Toast Helper
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.innerHTML = `
+        <span class="toast-icon">${type === 'success' ? '✔' : '✖'}</span>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      
+      // Trigger entrance
+      requestAnimationFrame(() => toast.classList.add('show'));
+
+      // Dismiss after 3.5s
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+      }, 3500);
+    }
+
+    // Check URL parameters for redirection messages
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('redirect') === 'unauthorized') {
+      const alert = document.getElementById('loginAlert');
+      const alertText = document.getElementById('loginAlertText');
+      alertText.textContent = 'Session expired or unauthorized. Please authenticate.';
+      alert.style.display = 'flex';
+    }
+
+    // Demo credentials autofill
+    document.getElementById('btnDemoLogin').addEventListener('click', () => {
+      const emailInput = document.getElementById('loginEmail');
+      const passInput = document.getElementById('loginPassword');
+      
+      emailInput.value = 'alex.vance@cybertech.net';
+      passInput.value = 'CyberOps#2026';
+
+      // Clear any previous error states
+      document.getElementById('group-loginEmail').classList.remove('has-error');
+      document.getElementById('group-loginPassword').classList.remove('has-error');
+      document.getElementById('loginAlert').style.display = 'none';
+
+      showToast('Demo credentials populated successfully!', 'success');
+    });
+
+    // Form submission & validation
+    const loginForm = document.getElementById('loginForm');
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const emailInput = document.getElementById('loginEmail');
+      const passInput = document.getElementById('loginPassword');
+      const groupEmail = document.getElementById('group-loginEmail');
+      const groupPassword = document.getElementById('group-loginPassword');
+      const loginAlert = document.getElementById('loginAlert');
+      const loginAlertText = document.getElementById('loginAlertText');
+
+      let isValid = true;
+      let firstErrorMsg = '';
+
+      // 1. Email validation (empty + regex)
+      const emailVal = emailInput.value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailVal) {
+        groupEmail.classList.add('has-error');
+        document.getElementById('error-loginEmail').textContent = 'Email field cannot be empty.';
+        isValid = false;
+        firstErrorMsg = firstErrorMsg || 'Email field is required.';
+      } else if (!emailRegex.test(emailVal)) {
+        groupEmail.classList.add('has-error');
+        document.getElementById('error-loginEmail').textContent = 'Invalid email syntax (e.g. user@domain.com).';
+        isValid = false;
+        firstErrorMsg = firstErrorMsg || 'Please provide a valid email format.';
+      } else {
+        groupEmail.classList.remove('has-error');
+        groupEmail.classList.add('is-valid');
+      }
+
+      // 2. Password validation (empty + length >= 8)
+      const passVal = passInput.value.trim();
+      if (!passVal) {
+        groupPassword.classList.add('has-error');
+        document.getElementById('error-loginPassword').textContent = 'Passcode cannot be empty.';
+        isValid = false;
+        firstErrorMsg = firstErrorMsg || 'Passcode is required.';
+      } else if (passVal.length < 8) {
+        groupPassword.classList.add('has-error');
+        document.getElementById('error-loginPassword').textContent = 'Passcode must be at least 8 characters long.';
+        isValid = false;
+        firstErrorMsg = firstErrorMsg || 'Passcode must be at least 8 characters.';
+      } else {
+        groupPassword.classList.remove('has-error');
+        groupPassword.classList.add('is-valid');
+      }
+
+      if (!isValid) {
+        loginAlert.style.display = 'flex';
+        loginAlertText.textContent = firstErrorMsg;
+        showToast(firstErrorMsg, 'error');
+        return;
+      }
+
+      // Success flow
+      loginAlert.style.display = 'none';
+      const submitBtn = document.getElementById('btnLoginSubmit');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>INITIALIZING LINK...</span> <span>⏳</span>';
+
+      showToast('Access Authorized. Welcome to CyberTech.', 'success');
+
+      // Create session
+      Auth.login(emailVal, 'Senior Systems Engineer');
+
+      // Redirect to dashboard
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 900);
+    });
+  </script>
+</body>
+</html>

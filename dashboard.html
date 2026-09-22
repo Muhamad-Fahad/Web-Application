@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CyberTech Systems Command Dashboard - Operative Management & Clearance Registration">
+  <title>CyberTech // Command Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <div class="app-container">
+    
+    <!-- Navigation Bar -->
+    <header>
+      <nav class="cyber-nav" aria-label="Main Navigation">
+        <a href="dashboard.html" class="nav-brand">
+          <div class="brand-icon">⚡</div>
+          <div>
+            <div class="brand-text">CYBERTECH // COMMAND</div>
+            <div class="brand-sub">OPERATIVE REGISTRATION & CLEARANCE NEXUS</div>
+          </div>
+        </a>
+
+        <div class="nav-actions">
+          <div class="user-chip">
+            <span class="status-dot"></span>
+            <span>OPERATOR:</span>
+            <strong id="userDisplayEmail">alex.vance@cybertech.net</strong>
+          </div>
+          <button type="button" id="btnLogout" class="btn btn-secondary btn-sm" title="Disconnect Session">
+            <span>DISCONNECT</span>
+            <span>⏻</span>
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Real-time Metric Cards -->
+      <section class="stats-grid" aria-label="System Metrics">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value" id="statTotalEmployees">0</div>
+          <div class="stat-label">ENROLLED OPERATIVES</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🏢</div>
+          <div class="stat-value" id="statTotalDepts">0</div>
+          <div class="stat-label">ACTIVE SECTORS / DEPTS</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🛡️</div>
+          <div class="stat-value" id="statTopClearance">0</div>
+          <div class="stat-label">HIGH CLEARANCE NODES</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⚡</div>
+          <div class="stat-value" id="statAvgSalary">$0k</div>
+          <div class="stat-label">AVG BASE COMPENSATION</div>
+        </div>
+      </section>
+
+      <!-- Main Grid: Registration Form and Records Feed -->
+      <div style="display: flex; flex-direction: column; gap: 32px;">
+        
+        <!-- Registration Form Card -->
+        <section class="cyber-card" aria-labelledby="formHeading">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+            <div>
+              <div class="cyber-badge" style="margin-bottom: 8px;">
+                <span class="status-dot"></span> DIRECTORY INTAKE FORM
+              </div>
+              <h2 id="formHeading" style="font-size: 1.5rem;">OPERATIVE REGISTRATION & CREDENTIALING</h2>
+              <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 4px;">
+                Enroll new technical personnel into the secure directory. All marked fields are mandatory.
+              </p>
+            </div>
+
+            <!-- Helper Quick Fill Button -->
+            <div>
+              <button type="button" id="btnSampleEmployee" class="btn btn-secondary btn-sm">
+                <span>POPULATE SAMPLE DATA</span>
+                <span>✨</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Alert Banner for Form Level Warnings -->
+          <div id="formAlertBanner" class="alert-banner alert-danger" style="display: none;" role="alert">
+            <span>⚠️</span>
+            <span id="formAlertText">Please correct the highlighted validation errors.</span>
+          </div>
+
+          <!-- The Registration Form -->
+          <form id="employeeRegistrationForm" novalidate>
+            <div class="form-grid">
+
+              <!-- 1. Full Name (Text input) -->
+              <div class="form-group" id="group-fullName">
+                <label for="fullName" class="form-label">
+                  <span>FULL LEGAL NAME</span>
+                  <span class="req">*REQUIRED</span>
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">👤</span>
+                  <input 
+                    type="text" 
+                    id="fullName" 
+                    name="fullName" 
+                    class="form-input" 
+                    placeholder="e.g. Rachel Sterling"
+                    required
+                  >
+                </div>
+                <span class="error-message" id="error-fullName">Name is required (letters only, min 3 characters).</span>
+              </div>
+
+              <!-- 2. Corporate Email (Email input) -->
+              <div class="form-group" id="group-empEmail">
+                <label for="empEmail" class="form-label">
+                  <span>CORPORATE EMAIL</span>
+                  <span class="req">*VALID FORMAT</span>
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">✉</span>
+                  <input 
+                    type="email" 
+                    id="empEmail" 
+                    name="empEmail" 
+                    class="form-input" 
+                    placeholder="rachel.s@cybertech.net"
+                    required
+                  >
+                </div>
+                <span class="error-message" id="error-empEmail">Please enter a valid corporate email.</span>
+              </div>
+
+              <!-- 3. Employee ID (Numeric input) -->
+              <div class="form-group" id="group-empId">
+                <label for="empId" class="form-label">
+                  <span>OPERATIVE ID (NUMERIC)</span>
+                  <span class="req">*4-6 DIGITS</span>
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">🆔</span>
+                  <input 
+                    type="number" 
+                    id="empId" 
+                    name="empId" 
+                    class="form-input" 
+                    placeholder="e.g. 84201"
+                    min="1000"
+                    max="999999"
+                    required
+                  >
+                </div>
+                <span class="error-message" id="error-empId">Enter a positive numeric ID (1000 - 999999).</span>
+              </div>
+
+              <!-- 4. Security Passcode (Password input) -->
+              <div class="form-group" id="group-empPassword">
+                <label for="empPassword" class="form-label">
+                  <span>INITIAL PASSCODE</span>
+                  <span class="req">*MIN 8 CHARACTERS</span>
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">🔒</span>
+                  <input 
+                    type="password" 
+                    id="empPassword" 
+                    name="empPassword" 
+                    class="form-input" 
+                    placeholder="••••••••••••"
+                    required
+                  >
+                </div>
+                <span class="error-message" id="error-empPassword">Password must be at least 8 characters long.</span>
+              </div>
+
+              <!-- 5. Phone Number (Numeric input) -->
+              <div class="form-group" id="group-empPhone">
+                <label for="empPhone" class="form-label">
+                  <span>SECURE PHONE LINE</span>
+                  <span class="req">*NUMERIC 10-15 DIGITS</span>
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">📞</span>
+                  <input 
+                    type="tel" 
+                    id="empPhone" 
+                    name="empPhone" 
+                    class="form-input" 
+                    placeholder="e.g. 5550198234"
+                    required
+                  >
+                </div>
+                <span class="error-message" id="error-empPhone">Invalid numeric phone number (10-15 digits).</span>
+              </div>
+
+              <!-- 6. Annual Compensation (Numeric input) -->
+              <div class="form-group" id="group-empSalary">
+                <label for="empSalary" class="form-label">
+                  <span>ANNUAL COMPENSATION ($)</span>
+                  <span class="req">*POSITIVE NUMBER</span>
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">💲</span>
+                  <input 
+                    type="number" 
+                    id="empSalary" 
+                    name="empSalary" 
+                    class="form-input" 
+                    placeholder="e.g. 145000"
+                    min="20000"
+                    step="1000"
+                    required
+                  >
+                </div>
+                <span class="error-message" id="error-empSalary">Valid compensation amount required (min $20,000).</span>
+              </div>
+
+              <!-- 7. Department Dropdown (Dropdown #1) -->
+              <div class="form-group" id="group-empDept">
+                <label for="empDept" class="form-label">
+                  <span>PRIMARY SECTOR / DEPT</span>
+                  <span class="req">*SELECT ONE</span>
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">🏛️</span>
+                  <select id="empDept" name="empDept" class="form-select" required>
+                    <option value="">-- Select Sector Department --</option>
+                    <option value="Cybersecurity Operations">Cybersecurity Operations</option>
+                    <option value="AI & Neural Systems">AI & Neural Systems</option>
+                    <option value="Quantum Infrastructure">Quantum Infrastructure</option>
+                    <option value="Data Defense & Cryptography">Data Defense & Cryptography</option>
+                    <option value="Autonomous Robotics">Autonomous Robotics</option>
+                  </select>
+                </div>
+                <span class="error-message" id="error-empDept">Please select an assigned department.</span>
+              </div>
+
+              <!-- 8. Clearance Level Dropdown (Dropdown #2) -->
+              <div class="form-group" id="group-empClearance">
+                <label for="empClearance" class="form-label">
+                  <span>SECURITY CLEARANCE TIER</span>
+                  <span class="req">*SELECT ONE</span>
+                </label>
+                <div class="input-wrapper">
+                  <span class="input-icon">🛡️</span>
+                  <select id="empClearance" name="empClearance" class="form-select" required>
+                    <option value="">-- Select Clearance Level --</option>
+                    <option value="Tier 1 - Confidential">Tier 1 - Confidential</option>
+                    <option value="Tier 2 - Secret">Tier 2 - Secret</option>
+                    <option value="Tier 3 - Standard Field">Tier 3 - Standard Field</option>
+                    <option value="Tier 4 - High Clearance">Tier 4 - High Clearance</option>
+                    <option value="Tier 5 - Root Admin">Tier 5 - Root Admin</option>
+                  </select>
+                </div>
+                <span class="error-message" id="error-empClearance">Please assign a security clearance tier.</span>
+              </div>
+
+              <!-- 9. Deployment Mode (Radio Buttons) -->
+              <div class="form-group form-full">
+                <label class="form-label">
+                  <span>DEPLOYMENT LOCATION MODE</span>
+                </label>
+                <div class="radio-group-container">
+                  <label class="custom-radio">
+                    <input type="radio" name="workMode" value="Hybrid" checked>
+                    <span>Hybrid Protocol</span>
+                  </label>
+                  <label class="custom-radio">
+                    <input type="radio" name="workMode" value="Remote">
+                    <span>Remote Uplink</span>
+                  </label>
+                  <label class="custom-radio">
+                    <input type="radio" name="workMode" value="On-Site">
+                    <span>On-Site Secure Facility</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- 10. Compliance Checkbox -->
+              <div class="form-group form-full" id="group-complianceCheck">
+                <label class="custom-checkbox-label">
+                  <input type="checkbox" id="complianceCheck" name="complianceCheck" required>
+                  <span>
+                    I confirm that the registered operative has undergone identity verification and agrees to adhere to the CyberTech Data Security and Terminal Compliance Protocol.
+                  </span>
+                </label>
+                <span class="error-message" id="error-complianceCheck">You must accept the security protocol to continue.</span>
+              </div>
+
+            </div>
+
+            <!-- Form Action Buttons -->
+            <div style="display: flex; gap: 16px; margin-top: 30px; flex-wrap: wrap;">
+              <button type="submit" id="btnSubmitEmployee" class="btn btn-primary">
+                <span>ENROLL OPERATIVE</span>
+                <span>➕</span>
+              </button>
+
+              <button type="button" id="btnClearForm" class="btn btn-outline">
+                <span>CLEAR FORM</span>
+                <span>↺</span>
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Live Records Directory Table -->
+        <section class="cyber-card" aria-labelledby="tableHeading">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
+            <div>
+              <h2 id="tableHeading" style="font-size: 1.35rem;">OPERATIVE DIRECTORY ROSTER</h2>
+              <p style="color: var(--text-muted); font-size: 0.85rem;">
+                Live list of registered personnel with real-time updates and search.
+              </p>
+            </div>
+
+            <!-- Search Input -->
+            <div style="min-width: 280px;">
+              <div class="input-wrapper">
+                <span class="input-icon">🔍</span>
+                <input 
+                  type="text" 
+                  id="searchRecords" 
+                  class="form-input" 
+                  placeholder="Filter by name, email, ID, or dept..."
+                  aria-label="Filter operatives directory"
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Table Wrapper -->
+          <div class="table-wrapper">
+            <table class="cyber-table">
+              <thead>
+                <tr>
+                  <th>OPERATIVE ID</th>
+                  <th>NAME</th>
+                  <th>EMAIL</th>
+                  <th>SECTOR / DEPT</th>
+                  <th>CLEARANCE</th>
+                  <th>SALARY</th>
+                  <th>MODE</th>
+                  <th style="text-align: right;">ACTION</th>
+                </tr>
+              </thead>
+              <tbody id="recordsTableBody">
+                <!-- Dynamically populated rows -->
+              </tbody>
+            </table>
+
+            <div id="tableEmptyState" style="display: none; padding: 40px 20px; text-align: center; color: var(--text-muted);">
+              <div style="font-size: 2rem; margin-bottom: 8px;">📡</div>
+              <div>No matching operative records discovered in current sector search.</div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer style="margin-top: 50px; text-align: center; color: var(--text-dim); font-size: 0.8rem; font-family: var(--font-mono);">
+      CYBERTECH ENTERPRISE SECURITY SYSTEM // ENCRYPTED HIGHWAY // v4.0.9
+    </footer>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/form.js"></script>
+  <script>
+    // Guard this page: requires private authentication
+    Auth.protectPage('private');
+
+    // Display logged-in user email
+    const currentUser = Auth.getCurrentUser();
+    if (currentUser && currentUser.email) {
+      document.getElementById('userDisplayEmail').textContent = currentUser.email;
+    }
+
+    // Handle logout button
+    document.getElementById('btnLogout').addEventListener('click', () => {
+      if (confirm('Disconnect from terminal session and return to gateway?')) {
+        Auth.logout();
+      }
+    });
+  </script>
+</body>
+</html>
